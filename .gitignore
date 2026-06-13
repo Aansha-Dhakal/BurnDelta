@@ -7,3 +7,9 @@ node_modules/
 coverage/
 dist/
 .DS_Store
+burndelta.db*
+launch.err
+launch.out
+env.example
+work/
+outputs/
