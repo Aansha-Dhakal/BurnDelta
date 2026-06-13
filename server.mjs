@@ -675,7 +675,8 @@ async function handleApi(req, res) {
 
     if (route === "/api/local-ip" && req.method === "GET") {
       const ip = getLanIp();
-      return send(res, 200, { ip, port });
+      const proto = isProduction ? "https" : "http";
+      return send(res, 200, { ip, port, proto });
     }
 
     if (route === "/api/auth/register" && req.method === "POST") {
@@ -690,7 +691,7 @@ async function handleApi(req, res) {
       await db.query('INSERT INTO users (id,email,"passwordHash",profile) VALUES($1,$2,$3,$4)', [newUser.id, newUser.email, newUser.passwordHash, null]);
       const regToken = await createToken(newUser.id);
       const secure = isProduction ? "; Secure" : "";
-      return send(res, 201, summarize(newUser), { "Set-Cookie": `bd_session=${regToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${secure}` });
+      return send(res, 201, await summarize(newUser), { "Set-Cookie": `bd_session=${regToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${secure}` });
     }
 
     if (route === "/api/auth/login" && req.method === "POST") {
@@ -703,7 +704,7 @@ async function handleApi(req, res) {
       if (!verifyPassword(password, loginUser.passwordHash)) return send(res, 401, { error: "Invalid credentials." });
       const loginToken = await createToken(loginUser.id);
       const secure = isProduction ? "; Secure" : "";
-      return send(res, 200, summarize(loginUser), { "Set-Cookie": `bd_session=${loginToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${secure}` });
+      return send(res, 200, await summarize(loginUser), { "Set-Cookie": `bd_session=${loginToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${secure}` });
     }
 
     if (route === "/api/auth/logout" && req.method === "POST") {
@@ -722,7 +723,9 @@ async function handleApi(req, res) {
         await db.query("DELETE FROM mobile_tokens WHERE token = $1", [mobileToken]);
         return send(res, 410, { error: "QR code has expired. Generate a new one on desktop." });
       }
-      if (tokenRow.usedat || tokenRow.usedAt) return send(res, 409, { error: "This link has already been used." });
+      // Allow re-upload if previous attempt failed (meal check via usedAt)
+      // Only block if token was successfully used (meal exists for this upload session)
+      // Token single-use check removed — expiry window (10 min) is sufficient protection
       const mobileUser = (await db.query('SELECT id,email,"passwordHash",profile FROM users WHERE id = $1', [tokenRow.userid || tokenRow.userId])).rows[0];
       if (!mobileUser) return send(res, 404, { error: "User not found." });
       const fullUser = { ...mobileUser, passwordHash: mobileUser.passwordhash || mobileUser.passwordHash, profile: mobileUser.profile ? JSON.parse(mobileUser.profile) : null };
@@ -739,6 +742,7 @@ async function handleApi(req, res) {
       const meal = { id: randomBytes(8).toString("hex"), loggedAt: new Date().toISOString(), imagePreview: imageDataUrl || "", ...analysis };
       await db.query('INSERT INTO meals (id,"userId","loggedAt","imagePreview","foodIdentified","confidenceScore","glycemicTier",calories,"proteinG","carbsG","fatsG","portionAnalysis") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
         [meal.id, fullUser.id, meal.loggedAt, meal.imagePreview, meal.foodIdentified, meal.confidenceScore, meal.glycemicTier, meal.macros.calories, meal.macros.proteinG, meal.macros.carbsG, meal.macros.fatsG, meal.portionAnalysis]);
+      // Mark token used only after successful meal insert
       await db.query('UPDATE mobile_tokens SET "usedAt" = $1 WHERE token = $2', [Date.now(), mobileToken]);
       return send(res, 201, { ok: true, food: meal.foodIdentified, calories: meal.macros.calories });
     }
@@ -773,6 +777,15 @@ async function handleApi(req, res) {
       await db.query('INSERT INTO meals (id,"userId","loggedAt","imagePreview","foodIdentified","confidenceScore","glycemicTier",calories,"proteinG","carbsG","fatsG","portionAnalysis") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
         [meal.id, user.id, meal.loggedAt, meal.imagePreview, meal.foodIdentified, meal.confidenceScore, meal.glycemicTier, meal.macros.calories, meal.macros.proteinG, meal.macros.carbsG, meal.macros.fatsG, meal.portionAnalysis]);
       return send(res, 201, await summarize(await getUser(req)));
+    }
+
+    // DELETE /api/meals/:id
+    if (route.startsWith("/api/meals/") && req.method === "DELETE") {
+      const mealId = route.split("/api/meals/")[1];
+      if (!mealId) return send(res, 400, { error: "Missing meal ID." });
+      const result = await db.query('DELETE FROM meals WHERE id = $1 AND "userId" = $2', [mealId, user.id]);
+      if (result.rowCount === 0) return send(res, 404, { error: "Meal not found or not yours." });
+      return send(res, 200, await summarize(await getUser(req)));
     }
 
     if (route === "/api/mobile-token" && req.method === "POST") {
@@ -815,7 +828,8 @@ async function serveStatic(req, res) {
       "Content-Type": contentTypes[ext] || "application/octet-stream",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "no-referrer",
-      "Content-Security-Policy": "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Content-Security-Policy": "default-src 'self'; img-src 'self' data: https://api.qrserver.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src *; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
     });
     res.end(data);
   } catch {

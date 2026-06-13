@@ -67,7 +67,7 @@ function renderShell(content) {
   app.innerHTML = `
     <main class="shell">
       <header class="topbar">
-        <div class="brand"><span class="mark">⚡</span><span>BURNDELTA</span></div>
+        <div class="brand"><span class="mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg></span><span>BURNDELTA</span></div>
         <div class="actions" style="margin:0">
           ${profile ? `<span class="metric-pill">${fmt(profile.weightKg)} kg</span>` : ""}
           ${state.data ? `<button class="btn secondary" data-action="logout">Logout</button>` : ""}
@@ -81,213 +81,169 @@ function renderShell(content) {
 }
 
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
 function renderAuth() {
-  renderShell(`
-    <section class="auth-wrap auth-hero">
-      <canvas class="auth-bg-canvas" id="authBgCanvas" aria-hidden="true"></canvas>
+  app.innerHTML = `
+    <div class="auth-page">
 
-      <div class="auth-experience">
-
-        <!-- LEFT: login panel -->
-        <div class="auth-panel">
-          <div class="auth-logo">
-            <span class="auth-bolt">⚡</span>
-            <span>BURNDELTA</span>
-          </div>
-          <p class="auth-copy">Sign in to sync meal analysis, burn-rate math, and kinetic offset guidance.</p>
-
-          <form id="loginForm" class="auth-form" novalidate>
-            <div class="auth-field">
-              <label for="li-email">EMAIL</label>
-              <input id="li-email" name="email" type="email" autocomplete="email" placeholder="your@email.com" required>
-            </div>
-            <div class="auth-field">
-              <label for="li-pw">PASSWORD</label>
-              <input id="li-pw" name="password" type="password" autocomplete="current-password" placeholder="Password" minlength="10" required>
-            </div>
-            <button class="btn auth-submit" type="submit">SIGN IN</button>
-          </form>
-
-          <div class="auth-divider"><span>NEW OPERATOR</span></div>
-
-          <form id="registerForm" class="auth-form" novalidate>
-            <div class="auth-field">
-              <label for="reg-email">EMAIL</label>
-              <input id="reg-email" name="email" type="email" autocomplete="email" placeholder="your@email.com" required>
-            </div>
-            <div class="auth-field">
-              <label for="reg-pw">PASSWORD</label>
-              <input id="reg-pw" name="password" type="password" autocomplete="new-password" placeholder="10+ characters" minlength="10" required>
-            </div>
-            <button class="btn auth-submit-reg" type="submit">CREATE ACCOUNT</button>
-          </form>
-
-          <div class="auth-status-bar">
-            <span class="auth-status-dot"></span>
-            <span>SYS_STATUS // ONLINE</span>
-            <span class="auth-status-ver">v0.1.0</span>
-          </div>
+      <!-- ── Left: branding + phone mockup ── -->
+      <div class="auth-left">
+        <div class="auth-brand">
+          <div class="auth-brand-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg></div>
+          <span>BurnDelta</span>
         </div>
+        <h1 class="auth-headline">Track what you eat.<br>Know what to burn.</h1>
+        <p class="auth-sub">Log meals with AI, get your exact calorie budget, and see how much cardio offsets any surplus.</p>
 
-        <!-- RIGHT: animated HUD visual -->
-        <div class="auth-visual" aria-hidden="true">
+        <!-- Phone mockup — matches dark aesthetic -->
+        <!-- Dashboard preview cards — replaces phone mockup -->
+        <div class="preview-cards">
 
-          <!-- Top-left data chip -->
-          <div class="auth-chip auth-chip-eq">
-            <span class="chip-label">METABOLIC EQUATION</span>
-            <span class="chip-line">m = &Delta;(biometric) &minus; B</span>
-            <span class="chip-line">= 14500 + 3491 (1.287)</span>
-            <span class="chip-line hl">= 16480 &minus; 8.57</span>
-          </div>
-
-          <!-- Top-right burn-rate chip -->
-          <div class="auth-chip auth-chip-rate">
-            <span class="chip-label">BURN-RATE</span>
-            <span class="chip-val">137.250</span>
-            <span class="chip-sub">19,999</span>
-            <span class="chip-sub">28.1%</span>
-          </div>
-
-          <!-- Central HUD rings + schematic figure -->
-
-          <!-- Metabolic core orb -->
-          <div class="pulse-orb-wrap" aria-hidden="true">
-            <svg class="pulse-orb-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <radialGradient id="orbGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%"   stop-color="#f59e0b" stop-opacity="0.9"/>
-                  <stop offset="40%"  stop-color="#f59e0b" stop-opacity="0.3"/>
-                  <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
-                </radialGradient>
-                <radialGradient id="orbInner" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%"   stop-color="#fde68a" stop-opacity="1"/>
-                  <stop offset="60%"  stop-color="#f59e0b" stop-opacity="0.9"/>
-                  <stop offset="100%" stop-color="#d97706" stop-opacity="0.8"/>
-                </radialGradient>
-                <filter id="orbBlur">
-                  <feGaussianBlur stdDeviation="3.5"/>
-                </filter>
-              </defs>
-              <!-- Outer glow rings -->
-              <circle class="orb-ring orb-ring-1" cx="60" cy="60" r="46" stroke="#f59e0b" stroke-width="0.6" stroke-opacity="0.15"/>
-              <circle class="orb-ring orb-ring-2" cx="60" cy="60" r="36" stroke="#f59e0b" stroke-width="0.8" stroke-opacity="0.22"/>
-              <circle class="orb-ring orb-ring-3" cx="60" cy="60" r="26" stroke="#f59e0b" stroke-width="1"   stroke-opacity="0.30"/>
-              <!-- Soft bloom -->
-              <circle cx="60" cy="60" r="22" fill="url(#orbGlow)" filter="url(#orbBlur)"/>
-              <!-- Expanding pulse waves -->
-              <circle class="orb-pulse orb-pulse-a" cx="60" cy="60" r="14" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.6"/>
-              <circle class="orb-pulse orb-pulse-b" cx="60" cy="60" r="14" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.6"/>
-              <circle class="orb-pulse orb-pulse-c" cx="60" cy="60" r="14" fill="none" stroke="#fbbf24" stroke-width="1"   stroke-opacity="0.4"/>
-              <!-- Solid core -->
-              <circle cx="60" cy="60" r="8" fill="url(#orbInner)" filter="url(#orbBlur)"/>
-              <circle cx="60" cy="60" r="5.5" fill="#fde68a"/>
-              <circle cx="60" cy="60" r="3"   fill="#ffffff" opacity="0.85"/>
-            </svg>
-          </div>
-
-          <div class="auth-wave-panel">
-            <div class="wave-head">
-              <span>Thermodynamic Feed</span>
-              <span class="wave-badge">[Meal-Analysis 94.2%] | Kinetic Offset Active</span>
+          <!-- Arc + calorie number -->
+          <div class="pc-ring-card">
+            <div class="pc-arc-wrap">
+              <svg viewBox="0 0 120 120" class="pc-arc-svg">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#ede8df" stroke-width="8"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#FF7A1A" stroke-width="8"
+                  stroke-dasharray="314.16" stroke-dashoffset="125.7"
+                  stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              </svg>
+              <div class="pc-arc-inner">
+                <span class="pc-arc-num">1,842</span>
+                <span class="pc-arc-lab">kcal left</span>
+              </div>
             </div>
-            <div class="wave-frame">
-              <canvas id="thermoCanvas"></canvas>
+            <div class="pc-ring-stats">
+              <div class="pc-stat-row"><span class="pc-stat-label">Consumed</span><span class="pc-stat-val">2,758</span></div>
+              <div class="pc-stat-row"><span class="pc-stat-label">Target</span><span class="pc-stat-val">2,386</span></div>
+              <div class="pc-stat-row pc-stat-surplus"><span class="pc-stat-label">Surplus</span><span class="pc-stat-val">+348</span></div>
             </div>
           </div>
 
-          <!-- Bottom formula overlay -->
-          <div class="auth-formula-bar">
-            <span>m=&Delta;(biometric) &minus; intake</span>
-            <span>&Delta; = &int;(biometric_sensors) &minus; &int;(energy_input)</span>
+          <!-- Meal cards row -->
+          <div class="pc-meals">
+            <div class="pc-meal-card">
+              <div class="pc-meal-top">
+                <span class="pc-meal-name">Grilled salmon + rice</span>
+                <span class="pc-meal-kcal">520 kcal</span>
+              </div>
+              <div class="pc-macro-row">
+                <span class="pc-macro pc-macro-p">P 38g</span>
+                <span class="pc-macro pc-macro-c">C 44g</span>
+                <span class="pc-macro pc-macro-f">F 14g</span>
+              </div>
+              <div class="pc-bar-track"><div class="pc-bar-fill" style="width:68%"></div></div>
+            </div>
+            <div class="pc-meal-card">
+              <div class="pc-meal-top">
+                <span class="pc-meal-name">Morning oats</span>
+                <span class="pc-meal-kcal">310 kcal</span>
+              </div>
+              <div class="pc-macro-row">
+                <span class="pc-macro pc-macro-p">P 12g</span>
+                <span class="pc-macro pc-macro-c">C 52g</span>
+                <span class="pc-macro pc-macro-f">F 6g</span>
+              </div>
+              <div class="pc-bar-track"><div class="pc-bar-fill" style="width:40%"></div></div>
+            </div>
           </div>
+
+          <!-- Cardio offset pill -->
+          <div class="pc-offset-card">
+            <div class="pc-offset-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13Z"/></svg>
+              348 kcal surplus · offset with
+            </div>
+            <div class="pc-offset-row">
+              <div class="pc-offset-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="m15 9-4 4-3 3"/><path d="m9 11-3 4H4"/><path d="m17 9 1 4-4 1"/></svg>
+                <span>Run</span><strong>24 min</strong>
+              </div>
+              <div class="pc-offset-divider"></div>
+              <div class="pc-offset-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 0 0-1-1h-4"/><path d="m5.5 14 3.5-7 4.5 4.5 2-3.5 3 3"/></svg>
+                <span>Cycle</span><strong>31 min</strong>
+              </div>
+              <div class="pc-offset-divider"></div>
+              <div class="pc-offset-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="m9 10 1 4 2-2 2 4"/><path d="m7 20 2-4"/><path d="m15 20-1-4"/><path d="m9 10-2 4"/><path d="m15 10 2 4"/></svg>
+                <span>Walk</span><strong>49 min</strong>
+              </div>
+            </div>
+          </div>
+
         </div>
-
       </div>
-    </section>
-  `);
-  bindAuthBgCanvas();
-  bindTelemetryCanvas();
+
+      <!-- ── Right: login inside phone frame ── -->
+      <div class="auth-right">
+        <div class="auth-phone-frame">
+          <div class="auth-phone-notch"></div>
+          <div class="auth-phone-screen">
+
+            <div class="auth-phone-brand">
+              <div class="auth-phone-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg></div>
+              <span>BurnDelta</span>
+            </div>
+
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+              <button class="auth-tab active" id="tabSignin" type="button">Sign in</button>
+              <button class="auth-tab" id="tabRegister" type="button">Create account</button>
+            </div>
+
+            <!-- Sign in form -->
+            <form id="loginForm" class="auth-form" novalidate>
+              <div class="auth-field">
+                <label for="li-email">Email</label>
+                <input id="li-email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
+              </div>
+              <div class="auth-field">
+                <label for="li-pw">Password</label>
+                <input id="li-pw" name="password" type="password" autocomplete="current-password" placeholder="Your password" minlength="10" required>
+              </div>
+              <button class="auth-btn" type="submit">Sign in</button>
+            </form>
+
+            <!-- Register form -->
+            <form id="registerForm" class="auth-form" style="display:none" novalidate>
+              <div class="auth-field">
+                <label for="reg-email">Email</label>
+                <input id="reg-email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
+              </div>
+              <div class="auth-field">
+                <label for="reg-pw">Password</label>
+                <input id="reg-pw" name="password" type="password" autocomplete="new-password" placeholder="10+ characters" minlength="10" required>
+              </div>
+              <button class="auth-btn" type="submit">Create account</button>
+            </form>
+
+            ${state.message ? `<p class="auth-error">${esc(state.message)}</p>` : ""}
+
+          </div>
+          <div class="auth-phone-bar"></div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  document.getElementById("tabSignin").addEventListener("click", () => {
+    document.getElementById("loginForm").style.display = "";
+    document.getElementById("registerForm").style.display = "none";
+    document.getElementById("tabSignin").classList.add("active");
+    document.getElementById("tabRegister").classList.remove("active");
+  });
+  document.getElementById("tabRegister").addEventListener("click", () => {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("registerForm").style.display = "";
+    document.getElementById("tabRegister").classList.add("active");
+    document.getElementById("tabSignin").classList.remove("active");
+  });
+
   document.querySelector("#loginForm").addEventListener("submit", submitAuth("login"));
   document.querySelector("#registerForm").addEventListener("submit", submitAuth("register"));
-}
-
-function bindAuthBgCanvas() {
-  if (state.telemetryFrame) cancelAnimationFrame(state.telemetryFrame);
-  const canvas = document.getElementById("authBgCanvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-
-  const particles = [];
-  const PARTICLE_COUNT = 55;
-  let W, H, raf;
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-
-  function spawnParticle() {
-    return {
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: (Math.random() - 0.5) * 0.35,
-      r: Math.random() * 1.5 + 0.4,
-      alpha: Math.random() * 0.45 + 0.12,
-      color: Math.random() < 0.72 ? "0,229,160" : "249,115,22"
-    };
-  }
-
-  resize();
-  window.addEventListener("resize", resize, { passive: true });
-  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(spawnParticle());
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    // Draw connection lines between nearby particles
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 130) {
-          const opacity = (1 - dist / 130) * 0.13;
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(0,229,160,${opacity})`;
-          ctx.lineWidth = 0.6;
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // Draw particles
-    for (const p of particles) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
-      ctx.fill();
-
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < -10) p.x = W + 10;
-      if (p.x > W + 10) p.x = -10;
-      if (p.y < -10) p.y = H + 10;
-      if (p.y > H + 10) p.y = -10;
-    }
-
-    raf = requestAnimationFrame(draw);
-  }
-
-  draw();
-  // Store cleanup handle in a way we can cancel on next render
-  window._authBgRaf = raf;
-  window._authBgCanvasCleanup = () => {
-    cancelAnimationFrame(raf);
-    window.removeEventListener("resize", resize);
-  };
 }
 
 function submitAuth(kind) {
@@ -309,220 +265,282 @@ function submitAuth(kind) {
 }
 
 // ─── ONBOARDING ───────────────────────────────────────────────────────────────
+// Step-by-step flow: one question per screen, MFP-style but dark BurnDelta aesthetic
+
+const OB_STEPS = ["goal", "sex", "body", "activity"];
+
+// Persisted answers across steps
+const obData = {
+  goal: "loss",
+  sex: "female",
+  age: "22",
+  heightCm: "168",
+  weightKg: "70",
+  targetWeightKg: "66",
+  activityLevel: "moderate"
+};
+
+let obStep = 0;
+
 function renderOnboarding() {
-  renderShell(`
-    <section class="ob-page">
-      <div class="ob-bg-grid" aria-hidden="true"></div>
-      <form id="profileForm" class="ob-card" novalidate>
+  obStep = 0;
+  renderObStep();
+}
 
-        <div class="ob-head">
-          <div class="ob-head-logo">
-            <span class="ob-bolt">⚡</span>
-            <span>BURNDELTA</span>
+function renderObStep() {
+  const step = OB_STEPS[obStep];
+  const total = OB_STEPS.length;
+  const pct = Math.round(((obStep) / total) * 100);
+
+  let inner = "";
+
+  if (step === "goal") {
+    inner = `
+      <h2 class="ob2-q">What's your goal?</h2>
+      <p class="ob2-sub">This sets your daily calorie target.</p>
+      <div class="ob2-choices" id="goalChoices">
+        <button class="ob2-choice ${obData.goal === "loss" ? "active" : ""}" data-val="loss">
+          <span class="ob2-choice-icon">↓</span>
+          <div>
+            <strong>Lose weight</strong>
+            <span>500 kcal deficit / day</span>
           </div>
-          <div class="ob-head-title">
-            <h1>Initialize Metabolic Baseline</h1>
+        </button>
+        <button class="ob2-choice ${obData.goal === "maintain" ? "active" : ""}" data-val="maintain">
+          <span class="ob2-choice-icon">→</span>
+          <div>
+            <strong>Maintain weight</strong>
+            <span>Match your daily burn</span>
+          </div>
+        </button>
+        <button class="ob2-choice ${obData.goal === "gain" ? "active" : ""}" data-val="gain">
+          <span class="ob2-choice-icon">↑</span>
+          <div>
+            <strong>Gain weight</strong>
+            <span>350 kcal surplus / day</span>
+          </div>
+        </button>
+      </div>
+    `;
+  } else if (step === "sex") {
+    inner = `
+      <h2 class="ob2-q">What's your biological sex?</h2>
+      <p class="ob2-sub">Used to calculate your BMR accurately.</p>
+      <div class="ob2-choices" id="sexChoices">
+        <button class="ob2-choice ob2-choice--lg ${obData.sex === "female" ? "active" : ""}" data-val="female">
+          <span class="ob2-choice-icon">♀</span>
+          <div><strong>Female</strong></div>
+        </button>
+        <button class="ob2-choice ob2-choice--lg ${obData.sex === "male" ? "active" : ""}" data-val="male">
+          <span class="ob2-choice-icon">♂</span>
+          <div><strong>Male</strong></div>
+        </button>
+      </div>
+    `;
+  } else if (step === "body") {
+    inner = `
+      <h2 class="ob2-q">Tell us about your body.</h2>
+      <p class="ob2-sub">Used to calculate your metabolic baseline.</p>
+      <div class="ob2-fields">
+        <div class="ob2-field">
+          <label>Age</label>
+          <div class="ob2-input-wrap">
+            <input type="number" id="ob2Age" min="13" max="110" value="${obData.age}" placeholder="22">
+            <span class="ob2-unit">years</span>
           </div>
         </div>
-
-        <!-- ── ROW 1: Biometric readouts ── -->
-        <div class="ob-row ob-row-bio">
-
-          <!-- Age readout -->
-          <div class="ob-readout">
-            <div class="ob-readout-head">
-              <span class="ob-tag">SYS_01</span>
-              <span class="ob-label">AGE</span>
-            </div>
-            <div class="ob-readout-body">
-              <input class="ob-input ob-input-big" name="age" type="number" min="13" max="110" value="22" required>
-              <span class="ob-unit">YRS</span>
-            </div>
-            <div class="ob-readout-foot">BIOLOGICAL_AGE</div>
+        <div class="ob2-field">
+          <label>Height</label>
+          <div class="ob2-input-wrap">
+            <input type="number" id="ob2Height" min="120" max="230" step="0.1" value="${obData.heightCm}" placeholder="168">
+            <span class="ob2-unit">cm</span>
           </div>
-
-          <!-- Sex readout -->
-          <div class="ob-readout">
-            <div class="ob-readout-head">
-              <span class="ob-tag">SYS_02</span>
-              <span class="ob-label">SEX</span>
-            </div>
-            <input type="hidden" name="sex" value="female">
-            <div class="ob-readout-body ob-readout-body--fill">
-              <div class="ob-pill" role="group" aria-label="Sex">
-                <button class="active" type="button" data-action="set-toggle" data-input="sex" data-value="female">FEMALE</button>
-                <button type="button" data-action="set-toggle" data-input="sex" data-value="male">MALE</button>
-              </div>
-            </div>
-            <div class="ob-readout-foot">HORMONAL_PROFILE</div>
+        </div>
+        <div class="ob2-field">
+          <label>Current weight</label>
+          <div class="ob2-input-wrap">
+            <input type="number" id="ob2Weight" min="30" max="300" step="0.1" value="${obData.weightKg}" placeholder="70">
+            <span class="ob2-unit">kg</span>
           </div>
-
-          <!-- Height readout -->
-          <div class="ob-readout">
-            <div class="ob-readout-head">
-              <span class="ob-tag">SYS_03</span>
-              <span class="ob-label">HEIGHT</span>
-            </div>
-            <div class="ob-readout-body">
-              <input class="ob-input ob-input-big" name="heightCm" type="number" min="120" max="230" step="0.1" value="168" required>
-              <span class="ob-unit">CM</span>
-            </div>
-            <div class="ob-readout-foot">SKELETAL_FRAME</div>
+        </div>
+        <div class="ob2-field">
+          <label>Goal weight</label>
+          <div class="ob2-input-wrap">
+            <input type="number" id="ob2Target" min="30" max="300" step="0.1" value="${obData.targetWeightKg}" placeholder="66">
+            <span class="ob2-unit">kg</span>
           </div>
-
-          <!-- Current weight readout -->
-          <div class="ob-readout ob-readout--accent">
-            <div class="ob-readout-head">
-              <span class="ob-tag ob-tag--surplus">SYS_04</span>
-              <span class="ob-label">CURRENT MASS</span>
-            </div>
-            <div class="ob-readout-body">
-              <input class="ob-input ob-input-big" name="weightKg" type="number" min="30" max="300" step="0.1" value="70" required>
-              <span class="ob-unit">KG</span>
-            </div>
-            <div class="ob-readout-foot">BODY_MASS_INPUT</div>
+        </div>
+      </div>
+    `;
+  } else if (step === "activity") {
+    inner = `
+      <h2 class="ob2-q">How active are you day-to-day?</h2>
+      <p class="ob2-sub">Not counting deliberate workouts.</p>
+      <div class="ob2-choices" id="actChoices">
+        <button class="ob2-choice ${obData.activityLevel === "sedentary" ? "active" : ""}" data-val="sedentary">
+          <div>
+            <strong>Sedentary</strong>
+            <span>Desk job, little movement</span>
           </div>
-
-          <!-- Target weight readout -->
-          <div class="ob-readout ob-readout--accent">
-            <div class="ob-readout-head">
-              <span class="ob-tag ob-tag--surplus">SYS_05</span>
-              <span class="ob-label">TARGET MASS</span>
-            </div>
-            <div class="ob-readout-body">
-              <input class="ob-input ob-input-big" name="targetWeightKg" type="number" min="30" max="300" step="0.1" value="66" required>
-              <span class="ob-unit">KG</span>
-            </div>
-            <div class="ob-readout-foot">DELTA_OBJECTIVE</div>
+        </button>
+        <button class="ob2-choice ${obData.activityLevel === "light" ? "active" : ""}" data-val="light">
+          <div>
+            <strong>Lightly active</strong>
+            <span>On your feet 1–3 days / week</span>
           </div>
+        </button>
+        <button class="ob2-choice ${obData.activityLevel === "moderate" ? "active" : ""}" data-val="moderate">
+          <div>
+            <strong>Moderately active</strong>
+            <span>Regular movement 3–5 days / week</span>
+          </div>
+        </button>
+        <button class="ob2-choice ${obData.activityLevel === "intense" ? "active" : ""}" data-val="intense">
+          <div>
+            <strong>Very active</strong>
+            <span>Physical work or training 6–7 days</span>
+          </div>
+        </button>
+      </div>
+    `;
+  }
 
+  app.innerHTML = `
+    <div class="ob2-page">
+      <div class="ob2-card">
+
+        <!-- Progress bar -->
+        <div class="ob2-progress-track">
+          <div class="ob2-progress-fill" style="width:${pct}%"></div>
         </div>
 
-        <!-- ── ROW 2: Activity + Goal ── -->
-        <div class="ob-row ob-row-config">
-
-          <!-- Activity level — telemetry module -->
-          <div class="ob-module" style="position:relative">
-            <div class="ob-module-head">
-              <div class="ob-module-title">
-                <span class="ob-tag">MOD_01</span>
-                <span class="ob-label">ACTIVITY COEFFICIENT</span>
-              </div>
-              <span class="ob-module-badge" id="activityBadge">1.55×</span>
-            </div>
-            <input type="hidden" name="activityLevel" value="moderate">
-            <div class="ob-activity-grid">
-              <button class="ob-activity-btn" type="button" data-action="set-activity" data-value="sedentary" data-label="Sedentary // 1.23x" data-mult="1.23">
-                <span class="ob-ab-mult">1.23×</span>
-                <span class="ob-ab-name">SEDENTARY</span>
-                <span class="ob-ab-desc">little or no exercise</span>
-              </button>
-              <button class="ob-activity-btn" type="button" data-action="set-activity" data-value="light" data-label="Light Activity // 1.37x" data-mult="1.37">
-                <span class="ob-ab-mult">1.37×</span>
-                <span class="ob-ab-name">LIGHT</span>
-                <span class="ob-ab-desc">1–3 days / week</span>
-              </button>
-              <button class="ob-activity-btn active" type="button" data-action="set-activity" data-value="moderate" data-label="Moderate Activity // 1.55x" data-mult="1.55">
-                <span class="ob-ab-mult">1.55×</span>
-                <span class="ob-ab-name">MODERATE</span>
-                <span class="ob-ab-desc">3–5 days / week</span>
-              </button>
-              <button class="ob-activity-btn" type="button" data-action="set-activity" data-value="intense" data-label="Intense Training // 1.72x" data-mult="1.72">
-                <span class="ob-ab-mult">1.72×</span>
-                <span class="ob-ab-name">INTENSE</span>
-                <span class="ob-ab-desc">6–7 days / week</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Fitness goal -->
-          <div class="ob-module ob-module--narrow" style="position:relative">
-            <div class="ob-module-head">
-              <div class="ob-module-title">
-                <span class="ob-tag">MOD_02</span>
-                <span class="ob-label">FITNESS DIRECTIVE</span>
-              </div>
-            </div>
-            <input type="hidden" name="goal" value="loss">
-            <div class="ob-goal-stack">
-              <button class="ob-goal-btn active" type="button" data-action="set-goal" data-value="loss" data-label="Weight Loss">
-                <span class="ob-goal-icon">▼</span>
-                <div>
-                  <span class="ob-goal-name">WEIGHT LOSS</span>
-                  <span class="ob-goal-sub">TDEE − 500 kcal/day</span>
-                </div>
-              </button>
-              <button class="ob-goal-btn" type="button" data-action="set-goal" data-value="maintain" data-label="Maintenance">
-                <span class="ob-goal-icon">◆</span>
-                <div>
-                  <span class="ob-goal-name">MAINTENANCE</span>
-                  <span class="ob-goal-sub">TDEE = target</span>
-                </div>
-              </button>
-              <button class="ob-goal-btn" type="button" data-action="set-goal" data-value="gain" data-label="Mass Gain">
-                <span class="ob-goal-icon">▲</span>
-                <div>
-                  <span class="ob-goal-name">MASS GAIN</span>
-                  <span class="ob-goal-sub">TDEE + 350 kcal/day</span>
-                </div>
-              </button>
-            </div>
-          </div>
-
+        <!-- Brand -->
+        <div class="ob2-brand">
+          <div class="ob2-brand-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z"/></svg></div>
+          <span>BurnDelta</span>
         </div>
 
-        <button class="ob-submit" type="submit">SAVE AND CONTINUE</button>
-
-        <div class="ob-footer">
-          <span class="ob-status-dot"></span>
-          <span>METABOLIC_ENGINE // READY</span>
-          <span class="ob-footer-ver">v0.1.0</span>
+        <!-- Step content -->
+        <div class="ob2-content" id="ob2Content">
+          ${inner}
         </div>
 
-      </form>
-    </section>
-  `);
-  const profileForm = document.querySelector("#profileForm");
-  bindProfileControls(profileForm);
-  profileForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    try {
-      state.data = await api("/api/profile", { method: "POST", body: JSON.stringify(Object.fromEntries(form.entries())) });
-      setMessage("");
-      render();
-    } catch (error) {
-      setMessage(`Error: ${error.message}`);
-      render();
+        <!-- Nav -->
+        <div class="ob2-nav">
+          ${obStep > 0 ? `<button class="ob2-back" id="ob2Back">Back</button>` : `<span></span>`}
+          <span class="ob2-step-count">${obStep + 1} / ${total}</span>
+          <button class="ob2-next" id="ob2Next">
+            ${obStep === total - 1 ? "Finish" : "Next"}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  // Bind choice buttons
+  if (step === "goal") {
+    document.querySelectorAll("#goalChoices .ob2-choice").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#goalChoices .ob2-choice").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        obData.goal = btn.dataset.val;
+      });
+    });
+  } else if (step === "sex") {
+    document.querySelectorAll("#sexChoices .ob2-choice").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#sexChoices .ob2-choice").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        obData.sex = btn.dataset.val;
+      });
+    });
+  } else if (step === "activity") {
+    document.querySelectorAll("#actChoices .ob2-choice").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#actChoices .ob2-choice").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        obData.activityLevel = btn.dataset.val;
+      });
+    });
+  }
+
+  // Back
+  document.getElementById("ob2Back")?.addEventListener("click", () => {
+    obStep--;
+    renderObStep();
+  });
+
+  // Next / Finish
+  document.getElementById("ob2Next").addEventListener("click", async () => {
+    // Collect body fields before leaving that step
+    if (step === "body") {
+      const age = document.getElementById("ob2Age")?.value?.trim();
+      const height = document.getElementById("ob2Height")?.value?.trim();
+      const weight = document.getElementById("ob2Weight")?.value?.trim();
+      const target = document.getElementById("ob2Target")?.value?.trim();
+      if (!age || !height || !weight || !target) {
+        alert("Please fill in all fields.");
+        return;
+      }
+      obData.age = age;
+      obData.heightCm = height;
+      obData.weightKg = weight;
+      obData.targetWeightKg = target;
+    }
+
+    if (obStep < OB_STEPS.length - 1) {
+      obStep++;
+      renderObStep();
+    } else {
+      // Submit
+      const btn = document.getElementById("ob2Next");
+      btn.disabled = true;
+      btn.textContent = "Saving…";
+      try {
+        state.data = await api("/api/profile", {
+          method: "POST",
+          body: JSON.stringify(obData)
+        });
+        setMessage("");
+        render();
+      } catch (error) {
+        btn.disabled = false;
+        btn.textContent = "Finish";
+        const content = document.getElementById("ob2Content");
+        if (content) {
+          const err = document.createElement("p");
+          err.className = "ob2-error";
+          err.textContent = error.message;
+          content.appendChild(err);
+        }
+      }
     }
   });
 }
 
 function bindProfileControls(profileForm) {
-  profileForm.addEventListener("click", (event) => {
+  // Legacy — kept for compatibility, step flow handles its own bindings
+  profileForm?.addEventListener("click", (event) => {
     const action = event.target.closest("[data-action]");
     if (!action) return;
-
     if (action.dataset.action === "set-activity") {
       profileForm.elements.activityLevel.value = action.dataset.value;
       profileForm.querySelectorAll("[data-action='set-activity']").forEach((btn) => btn.classList.toggle("active", btn === action));
       const badge = profileForm.querySelector("#activityBadge");
-      if (badge) badge.textContent = action.dataset.mult + "×";
-      return;
+      if (badge) badge.textContent = action.dataset.label;
     }
-
     if (action.dataset.action === "set-goal") {
       profileForm.elements.goal.value = action.dataset.value;
       profileForm.querySelectorAll("[data-action='set-goal']").forEach((btn) => btn.classList.toggle("active", btn === action));
-      return;
     }
-
     if (action.dataset.action === "set-toggle") {
       profileForm.elements[action.dataset.input].value = action.dataset.value;
       action.closest(".ob-pill").querySelectorAll("button").forEach((btn) => btn.classList.toggle("active", btn === action));
     }
   });
 }
+
 
 // ─── DASHBOARD ────────────────────────────────────────────────────────────────
 function bindTelemetryCanvas() {
@@ -625,7 +643,7 @@ function renderDashboard() {
               </div>
               <div class="stats-aside">
                 <div>
-                  <p class="stats-date">Today — ${fmtDate(today)}</p>
+                  <p class="stats-date">Today · ${fmtDate(today)}</p>
                   <p class="stats-consumed">${fmt(consumed)} / ${fmt(target)} kcal</p>
                 </div>
                 <div class="baseline-grid">
@@ -653,16 +671,16 @@ function renderDashboard() {
             <form id="mealForm">
               <div class="upload-actions">
                 <label class="dropzone" id="dropzone">
-                  <span class="camera-icon">+</span>
+                  <span class="camera-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
                   <strong>Upload or take a photo</strong>
                   <span class="muted small" id="fileName">PNG, JPEG, or WEBP</span>
                   <input id="mealImage" name="mealImage" type="file" accept="image/png,image/jpeg,image/webp" capture="environment" hidden>
                 </label>
-                <button class="remote-btn" data-action="remote-capture" type="button">Snap with phone</button>
+                <button class="remote-btn" data-action="remote-capture" type="button"><span class="remote-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>Snap with phone</button>
               </div>
               <div class="field" style="margin-top:4px">
-                <span class="describe-label">Or describe the meal</span>
-                <textarea name="description" rows="3" maxlength="180" placeholder="e.g. chicken breast, rice, broccoli"></textarea>
+                <label class="describe-label" for="mealDesc">Or describe the meal</label>
+                <textarea id="mealDesc" name="description" rows="3" maxlength="180" placeholder="e.g. chicken breast, rice, broccoli"></textarea>
               </div>
               <div class="actions" style="margin-top:12px">
                 <button class="btn" type="submit">${state.busy ? "Analyzing…" : "Log meal"}</button>
@@ -700,13 +718,13 @@ function weeklySundayBanner() {
     <div class="panel weekly-banner ${over ? "weekly-over" : "weekly-ok"}" style="margin-top:16px">
       <div class="weekly-banner-inner">
         <div>
-          <p class="muted small" style="margin:0">📅 Weekly Review — week of ${fmtDate(week.weekStart)}</p>
+          <p class="muted small" style="margin:0">📅 Weekly Review · week of ${fmtDate(week.weekStart)}</p>
           <p class="weekly-total">${fmt(week.totalCalories)} <span class="muted small">/ ${fmt(week.weeklyTarget)} kcal this week</span></p>
         </div>
         <div class="weekly-verdict ${over ? "surplus-text" : "safe-text"}">
           ${over
             ? `+${fmt(week.overBy)} kcal over weekly target`
-            : `${fmt(week.underBy)} kcal under — great week!`}
+            : `${fmt(week.underBy)} kcal under · great week!`}
         </div>
       </div>
     </div>
@@ -716,11 +734,11 @@ function weeklySundayBanner() {
 function kineticCard(totals) {
   return `
     <div class="alert">
-      <p class="alert-title">⚡ ${fmt(totals.delta)} kcal surplus — offset with cardio</p>
+      <p class="alert-title">⚡ ${fmt(totals.delta)} kcal surplus · offset with cardio</p>
       <div class="offset-grid">
         <div class="mini"><span class="mini-label">🏃 Run</span><strong>${fmt(totals.cardio.runningMins)} min</strong></div>
-        <div class="mini"><span class="mini-label">🚴 Cycle</span><strong>${fmt(totals.cardio.cyclingMins)} min</strong></div>
-        <div class="mini"><span class="mini-label">🚶 Walk</span><strong>${fmt(totals.cardio.walkingMins)} min</strong></div>
+        <div class="mini"><span class="mini-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 0 0-1-1h-4"/><path d="m5.5 14 3.5-7 4.5 4.5 2-3.5 3 3"/></svg> Cycle</span><strong>${fmt(totals.cardio.cyclingMins)} min</strong></div>
+        <div class="mini"><span class="mini-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="m9 10 1 4 2-2 2 4"/><path d="m7 20 2-4"/><path d="m15 20-1-4"/><path d="m9 10-2 4"/><path d="m15 10 2 4"/></svg> Walk</span><strong>${fmt(totals.cardio.walkingMins)} min</strong></div>
       </div>
     </div>
   `;
@@ -730,9 +748,9 @@ function mealCard(meal) {
   const totalMacro = meal.macros.proteinG + meal.macros.carbsG + meal.macros.fatsG || 1;
   const time = new Date(meal.loggedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
   return `
-    <article class="meal">
+    <article class="meal" data-meal-id="${esc(meal.id)}">
       <div class="thumb">${meal.imagePreview ? `<img src="${esc(meal.imagePreview)}" alt="">` : `${fmt(meal.macros.calories)}<br>kcal`}</div>
-      <div>
+      <div style="flex:1;min-width:0">
         <strong>${esc(meal.foodIdentified)}</strong>
         <div class="muted small">${fmt(meal.macros.calories)} kcal | P ${fmt(meal.macros.proteinG)}g | C ${fmt(meal.macros.carbsG)}g | F ${fmt(meal.macros.fatsG)}g</div>
         <div class="bars">
@@ -741,9 +759,14 @@ function mealCard(meal) {
           <div class="bar"><span class="fats" style="width:${(meal.macros.fatsG / totalMacro) * 100}%"></span></div>
         </div>
       </div>
-      <div style="text-align:right">
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
         <span class="metric-pill">${fmt(meal.confidenceScore * 100)}%</span>
-        <div class="muted small" style="margin-top:4px">${time}</div>
+        <div class="muted small">${time}</div>
+        <button class="meal-del-btn" data-action="delete-meal" data-id="${esc(meal.id)}" title="Remove meal" aria-label="Remove meal">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
       </div>
     </article>
   `;
@@ -936,18 +959,26 @@ function bindMealForm() {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const formData = new FormData(form);
     const file = input ? input.files[0] : null;
+    // Read textarea directly — FormData can miss dynamically typed values
+    const descEl = form.querySelector("textarea[name='description']");
+    const description = (descEl ? descEl.value : "").trim();
+    if (!file && !description) {
+      setMessage("Error: Upload a photo or describe the meal.");
+      return;
+    }
     try {
       state.busy = true;
       setMessage("Analyzing meal…");
       renderDashboard();
+      let imageDataUrl = "";
+      if (file) {
+        try { imageDataUrl = await fileToDataUrl(file); }
+        catch (imgErr) { setMessage(`Error: ${imgErr.message}`); state.busy = false; renderDashboard(); return; }
+      }
       state.data = await api("/api/meals", {
         method: "POST",
-        body: JSON.stringify({
-          description: formData.get("description"),
-          imageDataUrl: file ? await fileToDataUrl(file) : ""
-        })
+        body: JSON.stringify({ description, imageDataUrl })
       });
       state.busy = false;
       setMessage("Meal logged.", true);
@@ -980,6 +1011,24 @@ function bindGlobal() {
     setMessage("");
     renderAuth();
   });
+
+  // Delete meal — event delegation on document
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-action='delete-meal']");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (!id) return;
+    btn.disabled = true;
+    btn.style.opacity = "0.4";
+    try {
+      state.data = await api(`/api/meals/${id}`, { method: "DELETE" });
+      render();
+    } catch (err) {
+      btn.disabled = false;
+      btn.style.opacity = "";
+      setMessage(`Error: ${err.message}`);
+    }
+  }, { capture: false });
   
   // ── Remote capture: generate QR code modal ──────────────────────────────────
   document.querySelector('[data-action="remote-capture"]')?.addEventListener("click", async () => {
@@ -1000,171 +1049,219 @@ function render() {
 // Implements QR version 1-10, byte mode, mask pattern 0, ECC level M.
 // Draws to a <canvas> element using the project's green/dark palette.
 function drawQRCode(canvas, text) {
-  // ── GF(256) arithmetic ───────────────────────────────────────────────────────
-  const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
-  { let x = 1; for (let i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x = x & 128 ? (x << 1) ^ 285 : x << 1; } for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255]; }
-  const gMul = (a, b) => (a && b) ? EXP[LOG[a] + LOG[b]] : 0;
+  // Minimal QR Code generator — byte mode, ECC-M, masks 0-7, picks best mask
+  // Based on the ISO 18004 standard
 
-  function rsGenerator(n) {
-    let g = [1];
-    for (let i = 0; i < n; i++) {
-      const t = new Array(g.length + 1).fill(0);
-      for (let j = 0; j < g.length; j++) { t[j] ^= g[j]; t[j + 1] ^= gMul(g[j], EXP[i]); }
-      g = t;
+  // ── GF(256) ──────────────────────────────────────────────────────────────────
+  const GF_EXP = new Uint8Array(512);
+  const GF_LOG = new Uint8Array(256);
+  (function(){
+    let x = 1;
+    for (let i = 0; i < 255; i++) {
+      GF_EXP[i] = x; GF_LOG[x] = i;
+      x = x & 128 ? (x << 1) ^ 285 : x << 1;
     }
+    for (let i = 255; i < 512; i++) GF_EXP[i] = GF_EXP[i-255];
+  })();
+  const gfMul = (a, b) => a && b ? GF_EXP[GF_LOG[a] + GF_LOG[b]] : 0;
+  function gfPolyMul(p, q) {
+    const r = new Uint8Array(p.length + q.length - 1);
+    for (let i = 0; i < p.length; i++)
+      for (let j = 0; j < q.length; j++)
+        r[i+j] ^= gfMul(p[i], q[j]);
+    return r;
+  }
+  function rsGenerator(n) {
+    let g = new Uint8Array([1]);
+    for (let i = 0; i < n; i++) g = gfPolyMul(g, new Uint8Array([1, GF_EXP[i]]));
     return g;
   }
-
   function rsRemainder(data, gen) {
-    const rem = new Array(gen.length - 1).fill(0);
-    for (const byte of data) {
-      const factor = byte ^ rem.shift();
-      rem.push(0);
-      for (let i = 0; i < gen.length - 1; i++) rem[i] ^= gMul(gen[i + 1], factor);
+    const rem = new Uint8Array(gen.length - 1);
+    for (const b of data) {
+      const coef = b ^ rem[0];
+      rem.copyWithin(0, 1); rem[rem.length-1] = 0;
+      for (let i = 0; i < rem.length; i++) rem[i] ^= gfMul(coef, gen[i+1]);
     }
     return rem;
   }
 
-  // ── Capacity table: ECC level M ──────────────────────────────────────────────
-  // [totalDataCW, ecCW_per_block, blocks_g1, cw_per_block_g1, blocks_g2, cw_per_block_g2]
-  const CAP = [
-    null,
-    [16, 10, 1, 16, 0, 0],   // v1
-    [28, 16, 1, 28, 0, 0],   // v2
-    [44, 26, 1, 44, 0, 0],   // v3
-    [64, 18, 2, 32, 0, 0],   // v4
-    [86, 24, 2, 43, 0, 0],   // v5
-    [108, 16, 4, 27, 0, 0],  // v6
-    [124, 18, 4, 31, 0, 0],  // v7
-    [154, 22, 2, 38, 2, 39], // v8
-    [182, 22, 3, 36, 2, 37], // v9
-    [216, 26, 4, 43, 1, 44], // v10
+  // ── Capacity table ECC-M ──────────────────────────────────────────────────────
+  // [dataCW, ecPerBlock, numBlocks1, cwPerBlock1, numBlocks2, cwPerBlock2]
+  const CAP = [null,
+    [16,10,1,16,0,0],[28,16,1,28,0,0],[44,26,1,44,0,0],[64,18,2,32,0,0],
+    [86,24,2,43,0,0],[108,16,4,27,0,0],[124,18,4,31,0,0],[154,22,2,38,2,39],
+    [182,22,3,36,2,37],[216,26,4,43,1,44],
   ];
 
   const bytes = Array.from(new TextEncoder().encode(text));
   let ver = 1;
   while (ver <= 10 && CAP[ver][0] < bytes.length + 3) ver++;
-  if (ver > 10) { console.error("QR: URL too long"); return; }
+  if (ver > 10) { console.error("QR: text too long for version 1-10"); return; }
 
-  const [totalCW, ecPerBlock, b1, cw1, b2, cw2] = CAP[ver];
+  const [dataCW, ecPerBlock, nb1, cw1, nb2, cw2] = CAP[ver];
   const size = ver * 4 + 17;
 
-  // ── Build data bitstream ─────────────────────────────────────────────────────
+  // ── Bitstream ────────────────────────────────────────────────────────────────
   const bits = [];
-  const push = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >> i) & 1); };
-  push(4, 4);  // byte mode
+  const push = (v, n) => { for (let i = n-1; i >= 0; i--) bits.push((v>>i)&1); };
+  push(4, 4);
   push(bytes.length, 8);
   bytes.forEach(b => push(b, 8));
-  push(0, Math.min(4, totalCW * 8 - bits.length)); // terminator
+  push(0, Math.min(4, dataCW*8 - bits.length));
   while (bits.length % 8) bits.push(0);
-  for (let p = 0; bits.length < totalCW * 8; p = 1 - p) push(p ? 0x11 : 0xEC, 8);
-
+  for (let p = 0; bits.length < dataCW*8; p^=1) push(p ? 0x11 : 0xEC, 8);
   const dataBytes = [];
   for (let i = 0; i < bits.length; i += 8) {
-    let v = 0; for (let j = 0; j < 8; j++) v = (v << 1) | bits[i + j];
-    dataBytes.push(v);
+    let v = 0; for (let j = 0; j < 8; j++) v = (v<<1)|bits[i+j]; dataBytes.push(v);
   }
 
-  // ── Reed-Solomon error correction ────────────────────────────────────────────
+  // ── Reed-Solomon ──────────────────────────────────────────────────────────────
   const gen = rsGenerator(ecPerBlock);
   const blocks = [];
-  let offset = 0;
-  for (let i = 0; i < b1; i++) { const d = dataBytes.slice(offset, offset + cw1); blocks.push({ data: d, ec: rsRemainder(d, gen) }); offset += cw1; }
-  for (let i = 0; i < b2; i++) { const d = dataBytes.slice(offset, offset + cw2); blocks.push({ data: d, ec: rsRemainder(d, gen) }); offset += cw2; }
-
-  // Interleave
+  let off = 0;
+  for (let i = 0; i < nb1; i++) { const d = dataBytes.slice(off, off+cw1); blocks.push({d, ec: Array.from(rsRemainder(d, gen))}); off += cw1; }
+  for (let i = 0; i < nb2; i++) { const d = dataBytes.slice(off, off+cw2); blocks.push({d, ec: Array.from(rsRemainder(d, gen))}); off += cw2; }
   const codewords = [];
-  const maxData = Math.max(cw1, cw2 || 0);
-  for (let i = 0; i < maxData; i++) for (const b of blocks) if (i < b.data.length) codewords.push(b.data[i]);
+  const maxD = Math.max(cw1, cw2||0);
+  for (let i = 0; i < maxD; i++) for (const b of blocks) if (i < b.d.length) codewords.push(b.d[i]);
   for (let i = 0; i < ecPerBlock; i++) for (const b of blocks) codewords.push(b.ec[i]);
 
-  // ── Build module matrix ──────────────────────────────────────────────────────
-  const M   = Array.from({length: size}, () => new Int8Array(size).fill(-1));
-  const FN  = Array.from({length: size}, () => new Uint8Array(size));
-  const mark = (r, c, v) => { if (r >= 0 && r < size && c >= 0 && c < size) { M[r][c] = v; FN[r][c] = 1; } };
+  // ── Matrix ────────────────────────────────────────────────────────────────────
+  const M = Array.from({length:size}, () => new Int8Array(size).fill(-1));
+  const F = Array.from({length:size}, () => new Uint8Array(size));
+  const set = (r,c,v) => { if(r>=0&&r<size&&c>=0&&c<size){M[r][c]=v;F[r][c]=1;} };
 
-  // Finder patterns + separators
-  const finder = (row, col) => {
-    for (let r = -1; r <= 7; r++) for (let c = -1; c <= 7; c++) {
-      if (r < 0 || r > 6 || c < 0 || c > 6) { mark(row + r, col + c, 0); continue; }
-      const onBorder = r === 0 || r === 6 || c === 0 || c === 6;
-      const inCore   = r >= 2 && r <= 4 && c >= 2 && c <= 4;
-      mark(row + r, col + c, onBorder || inCore ? 1 : 0);
+  function drawFinder(r, c) {
+    for (let dr = -1; dr <= 7; dr++) for (let dc = -1; dc <= 7; dc++) {
+      if (r+dr<0||r+dr>=size||c+dc<0||c+dc>=size) continue;
+      const onBorder = dr>=0&&dr<=6&&dc>=0&&dc<=6&&(dr===0||dr===6||dc===0||dc===6);
+      const inCore = dr>=2&&dr<=4&&dc>=2&&dc<=4;
+      set(r+dr, c+dc, (onBorder||inCore)?1:0);
     }
-  };
-  finder(0, 0); finder(0, size - 7); finder(size - 7, 0);
-
-  // Timing strips
-  for (let i = 8; i <= size - 9; i++) {
-    const v = i % 2 === 0 ? 1 : 0;
-    mark(6, i, v); mark(i, 6, v);
   }
+  drawFinder(0,0); drawFinder(0,size-7); drawFinder(size-7,0);
 
+  // Timing
+  for (let i = 8; i <= size-9; i++) { set(6,i,i%2===0?1:0); set(i,6,i%2===0?1:0); }
   // Dark module
-  mark(size - 8, 8, 1);
+  set(size-8, 8, 1);
 
   // Alignment patterns
-  const ALN = [null,null,[6,18],[6,22],[6,26],[6,30],[6,34],
-    [6,22,38],[6,24,42],[6,28,46],[6,26,44]];
+  const ALN = [null,null,[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,28,46],[6,26,44]];
   if (ALN[ver]) for (const ar of ALN[ver]) for (const ac of ALN[ver]) {
-    if (FN[ar][ac]) continue;
-    for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) {
-      const onEdge = Math.abs(dr) === 2 || Math.abs(dc) === 2;
-      const center = dr === 0 && dc === 0;
-      mark(ar + dr, ac + dc, onEdge || center ? 1 : 0);
+    if (F[ar][ac]) continue;
+    for (let dr=-2;dr<=2;dr++) for (let dc=-2;dc<=2;dc++) {
+      const edge=Math.abs(dr)===2||Math.abs(dc)===2, center=dr===0&&dc===0;
+      set(ar+dr,ac+dc,(edge||center)?1:0);
     }
   }
 
-  // Format info (ECC-M=00, mask=101, BCH, XOR with 101010000010010)
-  // Precomputed for mask pattern 5 (checkerboard, best for readability)
-  const FMT = [1,1,0,0,1,1,1,1,0,0,0,1,0,0,0]; // M + mask 5
-  const FP1 = [[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
-  const FP2 = [[size-1,8],[size-2,8],[size-3,8],[size-4,8],[size-5,8],[size-6,8],[size-7,8],[size-8,8],[8,size-8],[8,size-7],[8,size-6],[8,size-5],[8,size-4],[8,size-3],[8,size-2]];
-  FMT.forEach((v, i) => { mark(FP1[i][0], FP1[i][1], v); mark(FP2[i][0], FP2[i][1], v); });
+  // Format info placeholder (filled after mask selection)
+  const FP1=[[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+  const FP2=[[size-1,8],[size-2,8],[size-3,8],[size-4,8],[size-5,8],[size-6,8],[size-7,8],[size-8,8],[8,size-8],[8,size-7],[8,size-6],[8,size-5],[8,size-4],[8,size-3],[8,size-2]];
+  FP1.forEach(([r,c])=>{M[r][c]=0;F[r][c]=1;});
+  FP2.forEach(([r,c])=>{M[r][c]=0;F[r][c]=1;});
 
-  // ── Place data bits (column-pair zigzag) ─────────────────────────────────────
+  // ── Data placement (zigzag) ───────────────────────────────────────────────────
   const cwBits = [];
-  for (const cw of codewords) for (let i = 7; i >= 0; i--) cwBits.push((cw >> i) & 1);
+  for (const cw of codewords) for (let i=7;i>=0;i--) cwBits.push((cw>>i)&1);
 
-  let bi = 0;
-  let colPair = 0; // 0 = rightmost pair, increments left
-  for (let colRight = size - 1; colRight >= 1; colRight -= 2) {
-    if (colRight === 6) colRight--; // skip timing column
-    const upward = (colPair % 2 === 0);
-    colPair++;
+  let bi = 0, pair = 0;
+  for (let right = size-1; right >= 1; right -= 2) {
+    if (right === 6) right--;
+    const up = (pair % 2 === 0);
+    pair++;
     for (let row = 0; row < size; row++) {
-      const r = upward ? (size - 1 - row) : row;
+      const r = up ? size-1-row : row;
       for (let d = 0; d < 2; d++) {
-        const c = colRight - d;
-        if (FN[r][c]) continue;
-        M[r][c] = bi < cwBits.length ? cwBits[bi++] : 0;
+        const c = right - d;
+        if (!F[r][c]) M[r][c] = bi < cwBits.length ? cwBits[bi++] : 0;
       }
     }
   }
 
-  // Apply mask pattern 5: (row % 2 + col % 3) % 2 === 0 ... actually mask 0: (r+c)%2==0
-  // Use mask 0 to match format info above (FMT is for mask 5 — let me use mask 0 and correct FMT)
-  // Format for ECC-M, mask 0: data bits = 00 000 → BCH → 0000101001111 → XOR 101010000010010 = 101010101101101
-  // Use this precomputed value:
-  const FMT0 = [1,0,1,0,1,0,1,0,1,1,0,1,1,0,1];
-  FMT0.forEach((v, i) => { M[FP1[i][0]][FP1[i][1]] = v; M[FP2[i][0]][FP2[i][1]] = v; });
+  // ── Mask evaluation & selection ───────────────────────────────────────────────
+  const maskFns = [
+    (r,c)=>(r+c)%2===0,
+    (r,c)=>r%2===0,
+    (r,c)=>c%3===0,
+    (r,c)=>(r+c)%3===0,
+    (r,c)=>(Math.floor(r/2)+Math.floor(c/3))%2===0,
+    (r,c)=>(r*c)%2+(r*c)%3===0,
+    (r,c)=>((r*c)%2+(r*c)%3)%2===0,
+    (r,c)=>((r+c)%2+(r*c)%3)%2===0,
+  ];
 
-  for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) {
-    if (!FN[r][c] && M[r][c] !== -1 && (r + c) % 2 === 0) M[r][c] ^= 1;
+  // Format strings for ECC-M (bits 0-1 = 00) + mask 0-7, BCH encoded + XOR 101010000010010
+  const FMT_STRINGS = [
+    [1,0,1,0,1,0,0,0,0,0,1,0,0,1,0],[1,0,1,0,0,1,1,0,1,1,1,0,1,1,1],
+    [1,0,1,1,1,1,0,1,0,0,0,1,1,0,0],[1,0,1,1,0,0,1,1,1,1,0,1,0,0,1],
+    [1,0,0,0,1,0,1,1,0,1,0,1,1,1,0],[1,0,0,0,0,1,0,1,1,0,0,1,0,1,1],
+    [1,0,0,1,1,1,1,0,0,1,1,0,0,0,0],[1,0,0,1,0,0,0,0,1,0,1,0,1,0,1],
+  ];
+
+  function applyMask(maskId) {
+    const fn = maskFns[maskId];
+    const copy = M.map(r => new Int8Array(r));
+    for (let r = 0; r < size; r++) for (let c = 0; c < size; c++)
+      if (!F[r][c] && fn(r,c)) copy[r][c] ^= 1;
+    // Apply format string
+    const fmt = FMT_STRINGS[maskId];
+    FP1.forEach(([r,c],i)=>copy[r][c]=fmt[i]);
+    FP2.forEach(([r,c],i)=>copy[r][c]=fmt[i]);
+    return copy;
   }
 
-  // ── Render to canvas ─────────────────────────────────────────────────────────
-  const QUIET = 2;
-  const CELL  = Math.max(2, Math.floor(210 / (size + QUIET * 2)));
-  const PX    = (size + QUIET * 2) * CELL;
+  function penalty(mat) {
+    let score = 0;
+    // Rule 1: 5+ consecutive same in row/col
+    for (let r = 0; r < size; r++) {
+      let run = 1;
+      for (let c = 1; c < size; c++) {
+        if (mat[r][c] === mat[r][c-1]) { run++; if (run===5) score+=3; else if(run>5) score++; }
+        else run = 1;
+      }
+    }
+    for (let c = 0; c < size; c++) {
+      let run = 1;
+      for (let r = 1; r < size; r++) {
+        if (mat[r][c] === mat[r-1][c]) { run++; if(run===5) score+=3; else if(run>5) score++; }
+        else run = 1;
+      }
+    }
+    // Rule 2: 2x2 blocks
+    for (let r = 0; r < size-1; r++) for (let c = 0; c < size-1; c++)
+      if (mat[r][c]===mat[r][c+1]&&mat[r][c]===mat[r+1][c]&&mat[r][c]===mat[r+1][c+1]) score+=3;
+    // Rule 4: proportion
+    let dark = 0;
+    for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) if (mat[r][c]===1) dark++;
+    const pct = dark / (size*size) * 100;
+    score += Math.abs(Math.floor(pct/5)*5 - 50) / 5 * 10;
+    return score;
+  }
+
+  let bestMat = null, bestScore = Infinity;
+  for (let m = 0; m < 8; m++) {
+    const mat = applyMask(m);
+    const s = penalty(mat);
+    if (s < bestScore) { bestScore = s; bestMat = mat; }
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────────
+  const QUIET = 4;
+  const CELL = Math.max(3, Math.floor(240 / (size + QUIET*2)));
+  const PX = (size + QUIET*2) * CELL;
   canvas.width = canvas.height = PX;
   const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#090c0c";
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, PX, PX);
-  ctx.fillStyle = "#00e5a0";
+  ctx.fillStyle = "#000000";
   for (let r = 0; r < size; r++) for (let c = 0; c < size; c++)
-    if (M[r][c] === 1) ctx.fillRect((c + QUIET) * CELL, (r + QUIET) * CELL, CELL, CELL);
+    if (bestMat[r][c] === 1)
+      ctx.fillRect((c+QUIET)*CELL, (r+QUIET)*CELL, CELL, CELL);
 }
+
 let _mobileModalState = { pollInterval: null, tokenExpiry: null, countdownInterval: null };
 
 function closeMobileModal() {
@@ -1188,27 +1285,19 @@ async function openMobileModal() {
   modal.className = "qr-modal";
   modal.innerHTML = `
     <div class="qr-modal-head">
-      <div class="qr-modal-title">
-        <span class="qr-tag">MOD_03</span>
-        <span class="qr-label">MOBILE LINK</span>
-      </div>
+      <span class="qr-label">Mobile Link</span>
       <button class="qr-close" id="qrCloseBtn" aria-label="Close">✕</button>
     </div>
-    <p class="qr-desc">Scan with your phone camera to snap a meal photo directly into this session.</p>
     <div class="qr-canvas-wrap" id="qrCanvasWrap">
       <div class="qr-loading">
         <span class="qr-spinner"></span>
-        <span>Generating secure link…</span>
+        <span>Generating…</span>
       </div>
     </div>
     <div class="qr-meta">
       <span class="qr-status-dot" id="qrStatusDot"></span>
       <span id="qrStatusText">Waiting for phone…</span>
       <span class="qr-countdown" id="qrCountdown"></span>
-    </div>
-    <div class="qr-url-bar" id="qrUrlBar" hidden>
-      <span id="qrUrlText"></span>
-      <button class="qr-copy-btn" id="qrCopyBtn">COPY</button>
     </div>
   `;
 
@@ -1251,45 +1340,43 @@ async function openMobileModal() {
     return;
   }
 
-  // Try to get the LAN IP — falls back to window.location.host if not available
-  let lanHost = location.host;
-  try {
-    const ipRes = await api("/api/local-ip");
-    if (ipRes.ip) lanHost = `${ipRes.ip}:${ipRes.port}`;
-  } catch {
-    // Old server without /api/local-ip — URL will use localhost, still works on desktop
+  // Build the upload URL — use public origin in production, LAN IP for local dev
+  const isLocalDev = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (isLocalDev) {
+    // Local dev — try to get LAN IP so phone can reach laptop on same WiFi
+    try {
+      const ipRes = await api("/api/local-ip");
+      if (ipRes.ip) {
+        uploadUrl = `http://${ipRes.ip}:${ipRes.port}/mobile.html?token=${token}`;
+      } else {
+        uploadUrl = `${location.protocol}//${location.host}/mobile.html?token=${token}`;
+      }
+    } catch {
+      uploadUrl = `${location.protocol}//${location.host}/mobile.html?token=${token}`;
+    }
+  } else {
+    // Production — use the actual public URL (Railway https domain)
+    uploadUrl = `${location.protocol}//${location.host}/mobile.html?token=${token}`;
   }
-  uploadUrl = `http://${lanHost}/mobile.html?token=${token}`;
 
-  // Draw QR code onto canvas
+  // Draw QR using qr-server.com API — guaranteed scannable
   const wrap = document.getElementById("qrCanvasWrap");
   wrap.innerHTML = "";
-  const qrCanvas = document.createElement("canvas");
-  qrCanvas.id = "qrCodeCanvas";
-  wrap.appendChild(qrCanvas);
-  drawQRCode(qrCanvas, uploadUrl);
-
-  // Show copyable URL bar
-  const urlBar = document.getElementById("qrUrlBar");
-  const urlText = document.getElementById("qrUrlText");
-  urlText.textContent = uploadUrl;
-  urlBar.hidden = false;
-
-  // Warn if URL is localhost — phone won't be able to scan it
-  const isLocalhost = lanHost.startsWith("localhost") || lanHost.startsWith("127.");
-  if (isLocalhost) {
-    const warn = document.createElement("p");
-    warn.style.cssText = "font-family:var(--sys-font);font-size:9px;color:rgba(249,115,22,0.7);letter-spacing:0.05em;margin:8px 0 0;line-height:1.5";
-    warn.textContent = "⚠ URL shows localhost — update server.mjs to get your LAN IP so your phone can scan this.";
-    urlBar.parentNode.insertBefore(warn, urlBar.nextSibling);
-  }
-
-  document.getElementById("qrCopyBtn").addEventListener("click", () => {
-    navigator.clipboard.writeText(uploadUrl).then(() => {
-      document.getElementById("qrCopyBtn").textContent = "COPIED";
-      setTimeout(() => { document.getElementById("qrCopyBtn").textContent = "COPY"; }, 2000);
-    });
-  });
+  const qrImg = document.createElement("img");
+  qrImg.id = "qrCodeCanvas";
+  qrImg.style.cssText = "width:210px;height:210px;border-radius:4px;display:block";
+  qrImg.alt = "QR Code";
+  const encodedUrl = encodeURIComponent(uploadUrl);
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=210x210&data=${encodedUrl}&bgcolor=ffffff&color=000000&qzone=2`;
+  qrImg.onerror = () => {
+    // Fallback to our canvas encoder if API fails
+    wrap.innerHTML = "";
+    const qrCanvas = document.createElement("canvas");
+    qrCanvas.id = "qrCodeCanvas";
+    wrap.appendChild(qrCanvas);
+    drawQRCode(qrCanvas, uploadUrl);
+  };
+  wrap.appendChild(qrImg);
 
   // Countdown timer
   const expiryMs = Date.now() + 600_000; // 10 min
@@ -1321,7 +1408,7 @@ async function openMobileModal() {
         const txt = document.getElementById("qrStatusText");
         if (dot) dot.classList.add("qr-status-dot--success");
         if (txt) txt.textContent = "Photo received! Refreshing…";
-        wrap.innerHTML = `<div class="qr-success"><span class="qr-success-icon">✓</span><span>Meal logged from phone</span></div>`;
+        wrap.innerHTML = `<div class="qr-success"><span class="qr-success-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span>Meal logged from phone</span></div>`;
         setTimeout(async () => {
           closeMobileModal();
           state.data = await api("/api/me");
