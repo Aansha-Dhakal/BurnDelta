@@ -1,36 +1,88 @@
 # BurnDelta
 
-BurnDelta is a secure local prototype of the app described in the PDF: a biometric onboarding flow plus a dark telemetry dashboard that logs meals from an image or text fallback, estimates calories/macros through a server-side Gemini gateway, and calculates cardio minutes required to offset calorie surplus.
+A full-stack calorie tracking web app that treats nutrition as a thermodynamic balance sheet. Log meals by uploading a photo or typing a description, get AI-powered macro estimates via the Gemini Vision API, and see exactly how many minutes of cardio it takes to offset any surplus.
 
-## Run
+---
 
-1. Copy `.env.example` to `.env` and set `SESSION_SECRET`.
-2. Optionally set `GEMINI_API_KEY` for live image analysis. Without it, the app uses a safe demo estimator.
-3. Start the app:
+## What it does
 
-```bash
-npm start
+- Step-by-step biometric onboarding that calculates your BMR and TDEE using the Mifflin-St Jeor equation
+- Meal logging via image upload, text description, or QR-based phone-to-desktop sync
+- AI macro estimation through a server-side Gemini Vision gateway with mock fallback when no API key is set
+- Real-time calorie ring showing remaining budget vs. consumed
+- Kinetic offset calculator: surplus calories converted to exact run, cycle, and walk durations using MET values
+- Calendar view with daily and weekly calorie history
+- Delete individual meals
+- Mobile upload page accessible by scanning a QR code from the desktop dashboard
+
+---
+
+## Stack
+
+- Node.js with no framework, vanilla JS frontend
+- PostgreSQL via Railway for persistent storage
+- Gemini 2.5 Flash for image and text meal analysis
+- Deployed on Railway with automatic deploys from GitHub
+
+---
+
+## Running locally
+
+1. Copy `.env.example` to `.env` and fill in the values:
+
+```
+SESSION_SECRET=any_long_random_string
+GEMINI_API_KEY=your_key_from_aistudio.google.com
+DATABASE_URL=your_postgres_connection_string
 ```
 
-Then open `http://localhost:8080`.
+2. Install dependencies:
 
-## Security Notes
-
-- Auth routes are rate limited to 5 attempts per 15 minutes per IP.
-- All API endpoints are rate limited and return rate limit headers.
-- Session cookies are HttpOnly and SameSite=Strict.
-- Passwords are hashed with Node `crypto.scrypt`.
-- Payloads are size limited and parsed as JSON only.
-- Biometric, auth, meal, text, and image inputs are validated and sanitized server-side.
-- Gemini API keys are read only from environment variables and never sent to frontend code.
-- Static assets are served with a restrictive Content Security Policy.
-
-Run the local security scan:
-
-```bash
-npm run security:audit
+```
+npm install
 ```
 
-## Prototype Limits
+3. Start the server:
 
-This version uses in-memory users, sessions, profiles, and meal logs so it can run without external dependencies. For production, replace the in-memory stores with Supabase/Postgres, add persistent session storage, add CSRF tokens for cookie-authenticated mutations, and configure HTTPS.
+```
+node --env-file=.env server.mjs
+```
+
+4. Open `http://localhost:8080`
+
+The `GEMINI_API_KEY` is optional. Without it, the app uses a built-in food knowledge base to estimate macros from text descriptions.
+
+---
+
+## Security
+
+- Passwords hashed with `crypto.scrypt` and a random salt
+- Session tokens are HMAC-signed and stored in HttpOnly, SameSite=Strict cookies
+- Auth routes rate limited to 5 attempts per 15 minutes per IP
+- All other API routes rate limited to 120 requests per 15 minutes
+- Payloads size-limited and parsed as JSON only
+- All user inputs validated and sanitized server-side before database writes
+- Gemini API key lives only in environment variables, never exposed to the frontend
+- Static assets served with a Content Security Policy header
+- Mobile upload tokens expire after 10 minutes and are single-use
+
+---
+
+## Project structure
+
+```
+server.mjs          Node.js HTTP server, all API routes, Gemini integration
+public/
+  index.html        App shell
+  app.js            All frontend rendering and state
+  styles.css        Design system and component styles
+  mobile.html       Phone upload page opened via QR code
+  assets/
+    newbg.png       Background image
+```
+
+---
+
+## Built by
+
+Aansha Dhakal — summer 2026
