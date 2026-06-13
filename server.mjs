@@ -827,8 +827,10 @@ async function serveStatic(req, res) {
 
 
 setInterval(() => {
-  db.prepare("DELETE FROM sessions WHERE expiresAt < ?").run(Date.now());
-  await db.query('DELETE FROM mobile_tokens WHERE "expiresAt" < $1', [Date.now()]);
+  (async () => {
+    await db.query('DELETE FROM sessions WHERE "expiresAt" < $1', [Date.now()]);
+    await db.query('DELETE FROM mobile_tokens WHERE "expiresAt" < $1', [Date.now()]);
+  })().catch(console.error);
 }, 60 * 60 * 1000);
 
 initDb().then(() => {
