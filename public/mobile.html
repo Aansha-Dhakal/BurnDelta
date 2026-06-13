@@ -2,457 +2,418 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="theme-color" content="#070809">
-  <title>BurnDelta — Mobile Upload</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#f5ede0">
+  <title>BurnDelta</title>
   <style>
-    :root {
-      --bg: #070809;
-      --surface: #0c0e0e;
-      --line: #1a2222;
-      --safe: #00e5a0;
-      --surplus: #f97316;
-      --text: #e4e4e7;
-      --muted: #52525b;
-      --sys: "JetBrains Mono", "Fira Code", "Roboto Mono", Consolas, monospace;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    body{
+      min-height:100dvh;
+      background:#f5ede0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      font-size:16px;
+      color:#1a1410;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:24px 16px 48px;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      min-height: 100dvh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-      font-size: 14px;
-      -webkit-font-smoothing: antialiased;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 28px 20px 40px;
+    .card{
+      width:100%;
+      max-width:400px;
+      background:#fff;
+      border-radius:20px;
+      padding:28px 22px 24px;
+      box-shadow:0 4px 24px rgba(0,0,0,0.10);
     }
 
-    /* Grid overlay */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(0,229,160,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,229,160,0.025) 1px, transparent 1px);
-      background-size: 48px 48px;
+    /* Brand */
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+    .bolt{
+      width:36px;height:36px;border-radius:9px;
+      background:#FF7A1A;color:#fff;
+      display:grid;place-items:center;flex-shrink:0;
+    }
+    .brand-name{font-size:17px;font-weight:700}
+
+    h1{font-size:20px;font-weight:700;margin-bottom:6px}
+    .sub{font-size:14px;color:#9a8870;line-height:1.5;margin-bottom:16px}
+
+    /* Session */
+    .session{
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:12px;color:#9a8870;
+      background:#f5f0ea;border:1px solid #e8ddd0;
+      border-radius:20px;padding:4px 12px;margin-bottom:20px;
+    }
+    .session.ok .dot{background:#FF7A1A;animation:pulse 2s infinite}
+    .session.bad{color:#c0392b;background:#fdf0ef;border-color:#f5c6c2}
+    .session.bad .dot{background:#c0392b}
+    .dot{width:7px;height:7px;border-radius:50%;background:#ccc;flex-shrink:0}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+    /* Upload buttons */
+    .upload-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+
+    .upbtn{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      padding:22px 10px;
+      background:#fdf8f4;
+      border:1.5px dashed #d4c4b0;
+      border-radius:14px;
+      color:#9a8870;font-size:13px;font-weight:600;
+      font-family:inherit;
+      cursor:pointer;
+      -webkit-appearance:none;appearance:none;
+      transition:border-color .15s,background .15s,color .15s;
+      /* Explicit touch action */
+      touch-action:manipulation;
+    }
+    .upbtn:active,.upbtn:focus{
+      outline:none;
+      border-color:#FF7A1A;
+      background:#fff8f4;
+      color:#FF7A1A;
+    }
+    .icon-wrap{
+      width:44px;height:44px;border-radius:11px;
+      background:#fff3ea;color:#FF7A1A;
+      display:flex;align-items:center;justify-content:center;
     }
 
-    .card {
-      position: relative;
-      width: min(420px, 100%);
-      background: rgba(8,10,10,0.96);
-      border: 1px solid rgba(0,229,160,0.14);
-      border-radius: 14px;
-      padding: 24px 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      border-radius: 14px 14px 0 0;
-      background: linear-gradient(90deg, transparent, rgba(0,229,160,0.5), transparent);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .logo-bolt {
-      display: grid;
-      place-items: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 7px;
-      border: 1.5px solid var(--safe);
-      background: rgba(0,229,160,0.08);
-      color: var(--safe);
-      font-size: 15px;
-      box-shadow: 0 0 12px rgba(0,229,160,0.18);
-    }
-
-    .logo-name {
-      font-family: var(--sys);
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      color: #fff;
-    }
-
-    h1 {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      color: #fff;
-    }
-
-    .subtitle {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
-    /* Camera / file picker */
-    .snap-zone {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      min-height: 160px;
-      border: 1.5px dashed #1e2828;
-      border-radius: 10px;
-      background: #080b0b;
-      cursor: pointer;
-      transition: border-color 180ms, background 180ms;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-
-    .snap-zone:hover, .snap-zone:focus-within {
-      border-color: rgba(0,229,160,0.35);
-      background: rgba(0,229,160,0.03);
-    }
-
-    .snap-zone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      font-size: 0;
-    }
-
-    .snap-zone .snap-icon { font-size: 32px; }
-    .snap-zone .snap-title { font-size: 13px; font-weight: 600; color: var(--text); }
-    .snap-zone .snap-hint  { font-size: 11px; color: var(--muted); font-family: var(--sys); letter-spacing: 0.04em; }
-
-    .preview-wrap {
-      display: none;
-      width: 100%;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 16px;
-      border: 1px solid var(--line);
-    }
-
-    .preview-wrap img {
-      width: 100%;
-      display: block;
-      max-height: 240px;
-      object-fit: cover;
+    /* Preview */
+    #previewWrap{display:none;margin-bottom:16px;position:relative;border-radius:12px;overflow:hidden;border:1px solid #e8ddd0}
+    #previewWrap img{width:100%;display:block;max-height:260px;object-fit:cover}
+    .rm{
+      position:absolute;top:8px;right:8px;
+      width:32px;height:32px;border-radius:50%;
+      background:rgba(0,0,0,.5);color:#fff;
+      border:none;cursor:pointer;font-size:18px;
+      display:grid;place-items:center;font-family:inherit;
+      touch-action:manipulation;
     }
 
     /* Divider */
-    .or-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-      color: #2a3a3a;
-      font-family: var(--sys);
-      font-size: 9px;
-      letter-spacing: 0.14em;
+    .divider{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#b0a090;font-size:13px}
+    .divider::before,.divider::after{content:"";flex:1;height:1px;background:#e8ddd0}
+
+    /* Textarea */
+    label.flabel{display:block;font-size:11px;font-weight:600;color:#9a8870;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    textarea{
+      width:100%;background:#fdf8f4;
+      border:1.5px solid #e8ddd0;border-radius:12px;
+      padding:12px 14px;color:#1a1410;font-size:15px;
+      font-family:inherit;resize:none;outline:none;
+      -webkit-appearance:none;
+      line-height:1.5;
+      /* Important: make sure it's interactable */
+      touch-action:auto;
+      -webkit-user-select:text;user-select:text;
     }
+    textarea::placeholder{color:#c0b0a0}
+    textarea:focus{border-color:#FF7A1A;box-shadow:0 0 0 3px rgba(255,122,26,.12)}
 
-    .or-divider::before, .or-divider::after {
-      content: ""; height: 1px; flex: 1; background: var(--line);
+    /* Submit */
+    #submitBtn{
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;height:54px;margin-top:16px;
+      background:#FF7A1A;color:#fff;
+      border:none;border-radius:13px;
+      font-family:inherit;font-size:16px;font-weight:700;
+      cursor:pointer;-webkit-appearance:none;appearance:none;
+      box-shadow:0 4px 16px rgba(255,122,26,.3);
+      touch-action:manipulation;
+      transition:opacity .15s;
     }
+    #submitBtn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+    #submitBtn:not(:disabled):active{opacity:.82}
 
-    textarea {
-      width: 100%;
-      background: #080b0b;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      padding: 12px 14px;
-      color: var(--text);
-      font-size: 13px;
-      font-family: inherit;
-      resize: none;
-      outline: none;
-      transition: border-color 180ms;
-      margin-bottom: 16px;
+    /* Status */
+    #status{margin-top:12px;padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5;display:none}
+    #status.err{display:block;background:#fdf0ef;border:1px solid #f5c6c2;color:#c0392b}
+    #status.ok {display:block;background:#fff8f4;border:1px solid #fdd0b0;color:#c05010}
+
+    /* Success */
+    #successView{display:none;flex-direction:column;align-items:center;gap:16px;padding:28px 0 12px;text-align:center}
+    #successView.show{display:flex}
+    .check-circle{
+      width:68px;height:68px;border-radius:50%;
+      background:#fff3ea;border:2px solid #FF7A1A;
+      color:#FF7A1A;display:grid;place-items:center;
     }
-
-    textarea::placeholder { color: #2a3a3a; }
-    textarea:focus { border-color: rgba(0,229,160,0.4); }
-
-    .submit-btn {
-      width: 100%;
-      height: 50px;
-      background: var(--safe);
-      border: none;
-      border-radius: 8px;
-      color: #050f0c;
-      font-family: var(--sys);
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      cursor: pointer;
-      transition: opacity 150ms, box-shadow 150ms;
-      box-shadow: 0 0 22px rgba(0,229,160,0.22);
+    #successView h2{font-size:22px;font-weight:700}
+    #successView p{font-size:14px;color:#9a8870}
+    .result-card{
+      width:100%;padding:16px 18px;
+      background:#fff8f4;border:1px solid #fdd0b0;
+      border-radius:14px;text-align:left;display:none;
     }
+    .result-food{font-size:12px;font-weight:600;color:#FF7A1A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+    .result-cal{font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
+    .result-unit{font-size:14px;color:#9a8870;margin-left:3px}
 
-    .submit-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      box-shadow: none;
+    .spin{
+      display:inline-block;width:18px;height:18px;
+      border:2.5px solid rgba(255,255,255,.3);
+      border-top-color:#fff;border-radius:50%;
+      animation:sp .7s linear infinite;
     }
-
-    .submit-btn:not(:disabled):hover {
-      opacity: 0.88;
-      box-shadow: 0 0 32px rgba(0,229,160,0.38);
-    }
-
-    /* Status messages */
-    .status {
-      margin-top: 16px;
-      padding: 12px 14px;
-      border-radius: 8px;
-      font-family: var(--sys);
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      display: none;
-    }
-
-    .status.error {
-      display: block;
-      background: rgba(249,115,22,0.08);
-      border: 1px solid rgba(249,115,22,0.25);
-      color: var(--surplus);
-    }
-
-    .status.success {
-      display: block;
-      background: rgba(0,229,160,0.07);
-      border: 1px solid rgba(0,229,160,0.22);
-      color: var(--safe);
-      text-align: center;
-    }
-
-    /* Success screen */
-    .success-screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 32px 0 16px;
-      text-align: center;
-    }
-
-    .success-screen.visible { display: flex; }
-
-    .success-check {
-      font-size: 48px;
-      filter: drop-shadow(0 0 16px rgba(0,229,160,0.55));
-    }
-
-    .success-screen h2 { font-size: 18px; font-weight: 700; }
-    .success-screen p  { font-size: 12px; color: var(--muted); }
-
-    .food-result {
-      margin-top: 16px;
-      padding: 14px 16px;
-      background: #080b0b;
-      border: 1px solid rgba(0,229,160,0.15);
-      border-radius: 8px;
-      width: 100%;
-      display: none;
-    }
-
-    .food-result .food-name {
-      font-family: var(--sys);
-      font-size: 11px;
-      color: var(--safe);
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
-    }
-
-    .food-result .food-cal {
-      font-size: 22px;
-      font-weight: 900;
-      font-variant-numeric: tabular-nums;
-      color: #fff;
-    }
-
-    .food-result .food-cal-unit {
-      font-family: var(--sys);
-      font-size: 10px;
-      color: var(--muted);
-      margin-left: 4px;
-    }
-
-    /* Label style */
-    label.field-label {
-      display: block;
-      font-family: var(--sys);
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      color: #3a5050;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    /* Spinner */
-    .spinner {
-      display: inline-block;
-      width: 14px; height: 14px;
-      border: 2px solid rgba(5,15,12,0.3);
-      border-top-color: #050f0c;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes sp{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="logo">
-      <div class="logo-bolt">⚡</div>
-      <span class="logo-name">BURNDELTA</span>
+<div class="card">
+  <div class="brand">
+    <div class="bolt">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13Z"/></svg>
     </div>
-
-    <div id="uploadView">
-      <h1>Log a meal</h1>
-      <p class="subtitle">Take a photo or describe what you ate. This will sync directly to your desktop session.</p>
-
-      <div class="snap-zone" id="snapZone">
-        <span class="snap-icon">📷</span>
-        <span class="snap-title">Tap to take photo</span>
-        <span class="snap-hint">or choose from gallery</span>
-        <input type="file" id="mealFileInput" accept="image/png,image/jpeg,image/webp" capture="environment">
-      </div>
-
-      <div class="preview-wrap" id="previewWrap">
-        <img id="previewImg" src="" alt="Preview">
-      </div>
-
-      <div class="or-divider"><span>OR DESCRIBE</span></div>
-
-      <label class="field-label" for="descInput">MEAL DESCRIPTION</label>
-      <textarea id="descInput" rows="3" maxlength="180" placeholder="e.g. grilled chicken, rice, broccoli…"></textarea>
-
-      <button class="submit-btn" id="submitBtn" disabled>SYNC TO DESKTOP</button>
-      <div class="status error" id="errorMsg"></div>
-    </div>
-
-    <div class="success-screen" id="successView">
-      <div class="success-check">✓</div>
-      <h2>Synced!</h2>
-      <p>Your meal has been logged. Check your desktop.</p>
-      <div class="food-result" id="foodResult">
-        <div class="food-name" id="foodName"></div>
-        <span class="food-cal" id="foodCal"></span>
-        <span class="food-cal-unit">kcal</span>
-      </div>
-    </div>
+    <span class="brand-name">BurnDelta</span>
   </div>
 
-  <script>
-    // Extract token from URL
-    const params = new URLSearchParams(location.search);
-    const TOKEN = params.get("token") || "";
+  <div id="mainView">
+    <h1>Log a meal</h1>
+    <p class="sub">Take a photo or describe what you ate — it syncs to your desktop.</p>
 
-    if (!TOKEN) {
-      document.getElementById("uploadView").innerHTML = `
-        <p style="color:#f97316;font-family:monospace;font-size:12px;text-align:center;padding:24px 0">
-          No token found. Scan a fresh QR code from your desktop.
-        </p>`;
+    <div class="session" id="sess">
+      <span class="dot"></span>
+      <span id="sessText">Loading…</span>
+    </div>
+
+    <div class="upload-row">
+      <button class="upbtn" id="camBtn" type="button">
+        <span class="icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </span>
+        Camera
+      </button>
+      <button class="upbtn" id="galBtn" type="button">
+        <span class="icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </span>
+        Gallery
+      </button>
+    </div>
+
+    <div id="previewWrap">
+      <img id="prevImg" src="" alt="">
+      <button class="rm" id="rmBtn" type="button">✕</button>
+    </div>
+
+    <div class="divider"><span>or describe</span></div>
+    <label class="flabel" for="desc">Meal description</label>
+    <textarea id="desc" rows="3" maxlength="300" placeholder="e.g. grilled chicken, rice, broccoli…"></textarea>
+
+    <button id="submitBtn" type="button" disabled>Sync to desktop</button>
+    <div id="status"></div>
+  </div>
+
+  <div id="successView">
+    <div class="check-circle">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h2>Synced!</h2>
+    <p>Meal logged. Check your desktop.</p>
+    <div class="result-card" id="resultCard">
+      <div class="result-food" id="resultFood"></div>
+      <span class="result-cal" id="resultCal"></span>
+      <span class="result-unit">kcal</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// Entire script in one block — no IIFE wrapper that could silently catch errors
+var TOK = new URLSearchParams(location.search).get('token') || '';
+var imgData = '';
+
+var sess      = document.getElementById('sess');
+var sessText  = document.getElementById('sessText');
+var submitBtn = document.getElementById('submitBtn');
+var statusEl  = document.getElementById('status');
+var prevWrap  = document.getElementById('previewWrap');
+var prevImg   = document.getElementById('prevImg');
+var descEl    = document.getElementById('desc');
+var mainView  = document.getElementById('mainView');
+var succView  = document.getElementById('successView');
+
+// ── Session display ────────────────────────────────────────────────────────────
+if (TOK) {
+  sessText.textContent = 'Session active · ' + TOK.substring(0, 8) + '…';
+  sess.className = 'session ok';
+} else {
+  sessText.textContent = 'No token — scan a fresh QR from desktop';
+  sess.className = 'session bad';
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function setErr(msg) {
+  statusEl.textContent = msg;
+  statusEl.className = 'err';
+  statusEl.style.display = 'block';
+}
+function setOk(msg) {
+  statusEl.textContent = msg;
+  statusEl.className = 'ok';
+  statusEl.style.display = 'block';
+}
+function clearSt() {
+  statusEl.style.display = 'none';
+  statusEl.textContent = '';
+}
+
+function refreshBtn() {
+  var hasImg  = imgData.length > 100;
+  var hasDesc = descEl.value.trim().length > 0;
+  submitBtn.disabled = !TOK || (!hasImg && !hasDesc);
+}
+
+// ── Image processing ───────────────────────────────────────────────────────────
+function handleFile(file) {
+  if (!file) return;
+  clearSt();
+
+  // Use FileReader first — most reliable across iOS/Android
+  var fr = new FileReader();
+  fr.onload = function(ev) {
+    var raw = ev.target.result;
+    if (!raw || raw.length < 100) {
+      setErr('Could not read image. Try another photo.');
+      return;
     }
 
-    const fileInput  = document.getElementById("mealFileInput");
-    const previewImg = document.getElementById("previewImg");
-    const previewWrap= document.getElementById("previewWrap");
-    const submitBtn  = document.getElementById("submitBtn");
-    const descInput  = document.getElementById("descInput");
-    const errorMsg   = document.getElementById("errorMsg");
-
-    let imageDataUrl = "";
-
-    function updateSubmitState() {
-      submitBtn.disabled = !imageDataUrl && !descInput.value.trim();
-    }
-
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        imageDataUrl = e.target.result;
-        previewImg.src = imageDataUrl;
-        previewWrap.style.display = "block";
-        document.getElementById("snapZone").style.display = "none";
-        updateSubmitState();
-      };
-      reader.readAsDataURL(file);
-    });
-
-    descInput.addEventListener("input", updateSubmitState);
-
-    submitBtn.addEventListener("click", async () => {
-      errorMsg.style.display = "none";
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="spinner"></span>ANALYZING…';
-
+    // Try to resize; fall back to raw if canvas fails
+    var im = new Image();
+    im.onload = function() {
       try {
-        const res = await fetch("/api/mobile-upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token: TOKEN,
-            imageDataUrl: imageDataUrl || "",
-            description: descInput.value.trim(),
-          }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          errorMsg.textContent = data.error || "Upload failed.";
-          errorMsg.className = "status error";
-          submitBtn.disabled = false;
-          submitBtn.textContent = "SYNC TO DESKTOP";
-          return;
+        var MAX = 960, w = im.width, h = im.height;
+        if (w > MAX || h > MAX) {
+          if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+          else        { w = Math.round(w * MAX / h); h = MAX; }
         }
-
-        // Show success
-        document.getElementById("uploadView").style.display = "none";
-        const successView = document.getElementById("successView");
-        successView.classList.add("visible");
-
-        if (data.food || data.calories) {
-          const foodResult = document.getElementById("foodResult");
-          document.getElementById("foodName").textContent = data.food || "";
-          document.getElementById("foodCal").textContent = Math.round(data.calories || 0);
-          foodResult.style.display = "block";
-        }
-
-      } catch {
-        errorMsg.textContent = "Network error. Check your connection.";
-        errorMsg.className = "status error";
-        submitBtn.disabled = false;
-        submitBtn.textContent = "SYNC TO DESKTOP";
+        var cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(im, 0, 0, w, h);
+        var out = cv.toDataURL('image/jpeg', 0.82);
+        imgData = (out && out.length > 200) ? out : raw;
+      } catch(e) {
+        imgData = raw;
       }
-    });
-  </script>
+      showPreview();
+    };
+    im.onerror = function() {
+      imgData = raw;
+      showPreview();
+    };
+    im.src = raw;
+  };
+  fr.onerror = function() { setErr('Failed to read file. Try describing the meal instead.'); };
+  fr.readAsDataURL(file);
+}
+
+function showPreview() {
+  prevImg.src = imgData;
+  prevWrap.style.display = 'block';
+  refreshBtn();
+}
+
+// ── Camera ─────────────────────────────────────────────────────────────────────
+document.getElementById('camBtn').addEventListener('click', function() {
+  var inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.capture = 'environment';  // property, not attribute — works better on iOS
+  document.body.appendChild(inp);
+  inp.onchange = function() {
+    if (inp.files && inp.files[0]) handleFile(inp.files[0]);
+    setTimeout(function(){ if(inp.parentNode) inp.parentNode.removeChild(inp); }, 500);
+  };
+  inp.click();
+});
+
+// ── Gallery ────────────────────────────────────────────────────────────────────
+document.getElementById('galBtn').addEventListener('click', function() {
+  var inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  // No capture attribute = opens gallery/file picker
+  document.body.appendChild(inp);
+  inp.onchange = function() {
+    if (inp.files && inp.files[0]) handleFile(inp.files[0]);
+    setTimeout(function(){ if(inp.parentNode) inp.parentNode.removeChild(inp); }, 500);
+  };
+  inp.click();
+});
+
+// ── Remove preview ─────────────────────────────────────────────────────────────
+document.getElementById('rmBtn').addEventListener('click', function() {
+  imgData = '';
+  prevImg.src = '';
+  prevWrap.style.display = 'none';
+  refreshBtn();
+});
+
+// ── Text input ─────────────────────────────────────────────────────────────────
+descEl.addEventListener('input', refreshBtn);
+descEl.addEventListener('keyup', refreshBtn);
+
+// ── Submit ─────────────────────────────────────────────────────────────────────
+submitBtn.addEventListener('click', function() {
+  var desc = descEl.value.trim();
+  if (!TOK)               { setErr('No session token. Scan a fresh QR code.'); return; }
+  if (!imgData && !desc)  { setErr('Add a photo or describe the meal.'); return; }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spin"></span> Syncing…';
+  clearSt();
+
+  var body = { token: TOK, description: desc };
+  if (imgData && imgData.length > 100) body.imageDataUrl = imgData;
+
+  fetch('/api/mobile-upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(function(res) {
+    return res.json().then(function(d) { return { ok: res.ok, code: res.status, d: d }; });
+  })
+  .then(function(r) {
+    if (!r.ok) {
+      setErr((r.d && r.d.error) ? r.d.error : 'Upload failed (HTTP ' + r.code + ')');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sync to desktop';
+      return;
+    }
+    mainView.style.display = 'none';
+    succView.className = 'show';
+    succView.style.display = 'flex';
+    if (r.d.food || r.d.calories) {
+      document.getElementById('resultFood').textContent = r.d.food || 'Meal logged';
+      document.getElementById('resultCal').textContent  = Math.round(r.d.calories || 0);
+      document.getElementById('resultCard').style.display = 'block';
+    }
+  })
+  .catch(function(err) {
+    setErr('Network error: ' + err.message);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Sync to desktop';
+  });
+});
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+refreshBtn();
+</script>
 </body>
 </html>
-. 
