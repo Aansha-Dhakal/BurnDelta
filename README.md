@@ -2,6 +2,10 @@
 
 A full-stack calorie tracking web app that treats nutrition as a thermodynamic balance sheet. Log meals by uploading a photo or typing a description, get AI-powered macro estimates via the Gemini Vision API, and see exactly how many minutes of cardio it takes to offset any surplus.
 
+**Live app:** https://burndelta-production.up.railway.app
+
+![BurnDelta login page](bdelta.png)
+
 ---
 
 ## What it does
